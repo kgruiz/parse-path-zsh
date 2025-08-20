@@ -78,6 +78,7 @@ parsepath [options]
 | `-r` | `--realpath` | Resolve to absolute, canonical paths (no symlinks) |
 | `-n` | `--number` | Prefix each line with a 1-based index |
 | `-0` | `--null` | Output NUL-separated entries (disables numbering) |
+| `-p` | `--raw` | Print the raw PATH as a single line and exit |
 
 ## Examples
 
@@ -111,6 +112,12 @@ NUL-separated output (useful for robust scripting):
 ❯ parsepath --null | xargs -0 -I{} echo {}
 ```
 
+Print the raw PATH in one line (no processing):
+
+```zsh
+❯ parsepath --raw
+```
+
 Combine with other tools, e.g. filter for Node-related paths:
 
 ```zsh
@@ -122,6 +129,7 @@ Combine with other tools, e.g. filter for Node-related paths:
 - Empty components in `PATH` represent the current directory (`.`) and are shown as `.` in the output.
 - When `--realpath` is supplied, canonicalization is performed using Zsh's `:A` modifier (no external `realpath` dependency).
 - The script includes Zsh completion for its flags when sourced in Zsh.
+- `--raw` prints `$PATH` exactly as-is and ignores other flags.
 
 ## Contributing
 

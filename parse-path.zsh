@@ -17,6 +17,7 @@
 #   -n, --number       Prefix each line with a 1-based index
 #   -0, --null         Output NUL-separated entries instead of newlines
 #                      (disables numbering)
+#   -p, --raw          Print the raw PATH as-is on a single line and exit
 #
 # Notes:
 #   - Empty components in PATH represent the current directory (".") and are
@@ -42,6 +43,7 @@ function parsepath {
   local use_realpath=false
   local number=false
   local use_null=false
+  local print_raw=false
 
   # help printer
   _parsepath_help() {
@@ -55,6 +57,7 @@ ${BOLD_CYAN}Options:${RESET}
   -r, --realpath     Resolve to absolute, canonical paths (no symlinks)
   -n, --number       Prefix each line with a 1-based index
   -0, --null         Output NUL-separated entries (disables numbering)
+  -p, --raw          Print the raw PATH as-is (single line) and exit
 EOF
   }
 
@@ -67,6 +70,7 @@ EOF
       -r|--realpath)  use_realpath=true; shift ;;
       -n|--number)    number=true; shift ;;
       -0|--null)      use_null=true; shift ;;
+      -p|--raw)       print_raw=true; shift ;;
       --)             shift; break ;;
       -*)
         printf "%sUnknown option%s '%s'\n" "$BOLD_RED" "$RESET" "$1" >&2
@@ -84,6 +88,12 @@ EOF
 
   if (( show_help )); then
     _parsepath_help
+    return 0
+  fi
+
+  # raw PATH output (bypass processing)
+  if [[ $print_raw == true ]]; then
+    printf "%s\n" "$PATH"
     return 0
   fi
 
@@ -164,7 +174,8 @@ if [[ -n $ZSH_VERSION ]]; then
       '(-u --unique)'{-u,--unique}'[remove duplicates while preserving order]' \
       '(-r --realpath)'{-r,--realpath}'[resolve to absolute, canonical paths]' \
       '(-n --number)'{-n,--number}'[prefix each line with a 1-based index]' \
-      '(-0 --null)'{-0,--null}'[use NUL as line separator]'
+      '(-0 --null)'{-0,--null}'[use NUL as line separator]' \
+      '(-p --raw)'{-p,--raw}'[print raw PATH as-is (single line) and exit]'
   }
   compdef _parsepath parsepath
 fi
